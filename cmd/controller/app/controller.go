@@ -191,6 +191,7 @@ func buildControllerContext(opts *options.ControllerOptions) (*controller.Contex
 			DefaultAutoCertificateAnnotations:  opts.DefaultAutoCertificateAnnotations,
 			DefaultACMEIssuerChallengeType:     opts.DefaultACMEIssuerChallengeType,
 			DefaultACMEIssuerDNS01ProviderName: opts.DefaultACMEIssuerDNS01ProviderName,
+                        RequireAnnotations:                 opts.RequireAnnotations,
 		},
 		CertificateOptions: controller.CertificateOptions{
 			EnableOwnerRef: opts.EnableCertificateOwnerRef,

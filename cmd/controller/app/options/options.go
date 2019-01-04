@@ -61,6 +61,7 @@ type ControllerOptions struct {
 	DefaultAutoCertificateAnnotations  []string
 	DefaultACMEIssuerChallengeType     string
 	DefaultACMEIssuerDNS01ProviderName string
+        RequireAnnotations                 bool
 
 	// DNS01Nameservers allows specifying a list of custom nameservers to perform DNS checks
 	DNS01Nameservers []string
@@ -86,6 +87,7 @@ const (
 	defaultTLSACMEIssuerKind           = "Issuer"
 	defaultACMEIssuerChallengeType     = "http01"
 	defaultACMEIssuerDNS01ProviderName = ""
+        defaultRequireAnnotations          = true
 	defaultEnableCertificateOwnerRef   = false
 )
 
@@ -195,6 +197,8 @@ func (s *ControllerOptions) AddFlags(fs *pflag.FlagSet) {
 		"Name of the Issuer to use when the tls is requested but issuer name is not specified on the ingress resource.")
 	fs.StringVar(&s.DefaultIssuerKind, "default-issuer-kind", defaultTLSACMEIssuerKind, ""+
 		"Kind of the Issuer to use when the tls is requested but issuer kind is not specified on the ingress resource.")
+        fs.BoolVar(&s.RequireAnnotations, "require-annotations", defaultRequireAnnotations, ""+
+                 "Indicates whether the ingress-shim should only process ingresses which contain the appropriate annotations (true) or process all ingresses (false)")
 	fs.StringVar(&s.DefaultACMEIssuerChallengeType, "default-acme-issuer-challenge-type", defaultACMEIssuerChallengeType, ""+
 		"The ACME challenge type to use when tls is requested for an ACME Issuer but is not specified on the ingress resource.")
 	fs.StringVar(&s.DefaultACMEIssuerDNS01ProviderName, "default-acme-issuer-dns01-provider-name", defaultACMEIssuerDNS01ProviderName, ""+

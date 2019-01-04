@@ -106,6 +106,7 @@ type IngressShimOptions struct {
 	DefaultACMEIssuerChallengeType     string
 	DefaultACMEIssuerDNS01ProviderName string
 	DefaultAutoCertificateAnnotations  []string
+        RequireAnnotations                 bool
 }
 
 type CertificateOptions struct {

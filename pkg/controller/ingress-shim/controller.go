@@ -50,6 +50,7 @@ type defaults struct {
 	issuerName, issuerKind      string
 	acmeIssuerChallengeType     string
 	acmeIssuerDNS01ProviderName string
+	requireAnnotations          bool
 }
 
 type Controller struct {
@@ -213,7 +214,7 @@ func init() {
 			ctx.Client,
 			ctx.CMClient,
 			ctx.Recorder,
-			defaults{ctx.DefaultAutoCertificateAnnotations, ctx.DefaultIssuerName, ctx.DefaultIssuerKind, ctx.DefaultACMEIssuerChallengeType, ctx.DefaultACMEIssuerDNS01ProviderName},
+			defaults{ctx.DefaultAutoCertificateAnnotations, ctx.DefaultIssuerName, ctx.DefaultIssuerKind, ctx.DefaultACMEIssuerChallengeType, ctx.DefaultACMEIssuerDNS01ProviderName, ctx.RequireAnnotations},
 		).Run
 	})
 }
