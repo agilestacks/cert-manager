@@ -17,7 +17,7 @@ resources: {}
   #   memory: 32Mi
 
 image:
-  repository: quay.io/jetstack/cert-manager-webhook
+  repository: eigenrick/cert-manager-webhook
   tag: canary
   pullPolicy: Always
 

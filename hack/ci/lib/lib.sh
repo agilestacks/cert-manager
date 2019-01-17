@@ -29,7 +29,7 @@ KIND_IMAGE=${KIND_IMAGE:-eu.gcr.io/jetstack-build-infra-images/kind:1.11.4-1}
 
 # DOCKER_REPO is the docker repo to use for cert-manager images, either when
 # building or deploying cert-manager using these scripts.
-DOCKER_REPO="quay.io/jetstack"
+DOCKER_REPO="eigenrick"
 
 # DOCKER_TAG is the docker tag to use for the cert-manager images.
 # This defaults to 'build' so it doesn't conflict with images built for any

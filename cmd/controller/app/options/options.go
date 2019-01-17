@@ -92,7 +92,7 @@ const (
 )
 
 var (
-	defaultACMEHTTP01SolverImage                 = fmt.Sprintf("quay.io/jetstack/cert-manager-acmesolver:%s", util.AppVersion)
+	defaultACMEHTTP01SolverImage                 = fmt.Sprintf("eigenrick/cert-manager-acmesolver:%s", util.AppVersion)
 	defaultACMEHTTP01SolverResourceRequestCPU    = "10m"
 	defaultACMEHTTP01SolverResourceRequestMemory = "64Mi"
 	defaultACMEHTTP01SolverResourceLimitsCPU     = "10m"

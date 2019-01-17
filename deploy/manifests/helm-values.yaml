@@ -6,6 +6,8 @@ resources:
     memory: 32Mi
 
 ingressShim:
+  issuerName: letsencrypt-staging
+  requireAnnotations: false
   resources:
     requests:
       cpu: 10m

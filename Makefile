@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Set DOCKER_REPO to customise the image docker repo, e.g. "quay.io/jetstack"
-DOCKER_REPO :=
+DOCKER_REPO :=eigenrick
 APP_VERSION := canary
 HACK_DIR ?= hack
 
