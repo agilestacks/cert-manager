@@ -17,7 +17,7 @@ You can perform these two steps with the following commands:
 
     # Install the cert-manager CRDs
     $ kubectl apply \
-        -f https://raw.githubusercontent.com/jetstack/cert-manager/v0.6.0/deploy/manifests/00-crds.yaml
+        -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml
 
     # Update helm repository cache
     $ helm repo update
@@ -55,20 +55,19 @@ To install cert-manager using the static manifests, you should run:
 
 .. code-block:: shell
 
-   # Install the cert-manager CRDs
-   $ kubectl apply \
-        -f https://raw.githubusercontent.com/jetstack/cert-manager/v0.6.0/deploy/manifests/00-crds.yaml
-
-   # Create a namespace to run cert-manager in
-   $ kubectl create namespace cert-manager
-
-   # Disable resource validation on the cert-manager namespace
-   $ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
-
    # Install cert-manager
    $ kubectl apply \
-        -f https://raw.githubusercontent.com/jetstack/cert-manager/v0.6.0/deploy/manifests/cert-manager.yaml
+        -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/cert-manager.yaml
+
+.. note::
+   If you are running kubectl v1.12 or below, you will need to add the
+   ``--validate=false`` flag to your ``kubectl apply`` command above else you
+   will receive a validation error relating to the ``caBundle`` field of the
+   ``ValidatingWebhookConfiguration`` resource.
+   This issue is resolved in Kubernetes 1.13 onwards. More details can be found
+   in `kubernetes/kubernetes#69590`_.
 
 .. _`charts repository`: https://github.com/kubernetes/charts
 .. _`Helm chart README`: https://github.com/kubernetes/charts/blob/master/stable/cert-manager/README.md
 .. _`deploy directory`: https://github.com/jetstack/cert-manager/blob/master/contrib/manifests/cert-manager
+.. _`kubernetes/kubernetes#69590`: https://github.com/kubernetes/kubernetes/issues/69590

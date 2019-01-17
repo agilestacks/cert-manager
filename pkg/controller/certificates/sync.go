@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Jetstack cert-manager contributors.
+Copyright 2019 The Jetstack cert-manager contributors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -77,10 +77,15 @@ func (c *Controller) Sync(ctx context.Context, crt *v1alpha1.Certificate) (err e
 	}()
 
 	// grab existing certificate and validate private key
-	cert, key, err := kube.SecretTLSKeyPair(c.secretLister, crtCopy.Namespace, crtCopy.Spec.SecretName)
+	certs, key, err := kube.SecretTLSKeyPair(c.secretLister, crtCopy.Namespace, crtCopy.Spec.SecretName)
 	// if we don't have a certificate, we need to trigger a re-issue immediately
 	if err != nil && !(k8sErrors.IsNotFound(err) || errors.IsInvalidData(err)) {
 		return err
+	}
+
+	var cert *x509.Certificate
+	if len(certs) > 0 {
+		cert = certs[0]
 	}
 
 	// update certificate expiry metric

@@ -1,12 +1,14 @@
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository") 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 
 ## Load rules_go and dependencies
 http_archive(
     name = "io_bazel_rules_go",
-    urls = ["https://github.com/bazelbuild/rules_go/releases/download/0.16.2/rules_go-0.16.2.tar.gz"],
-    sha256 = "f87fa87475ea107b3c69196f39c82b7bbf58fe27c62a338684c20ca17d1d8613",
+    urls = ["https://github.com/bazelbuild/rules_go/releases/download/0.16.5/rules_go-0.16.5.tar.gz"],
+    sha256 = "7be7dc01f1e0afdba6c8eb2b43d2fa01c743be1b9273ab1eaf6c233df078d705",
 )
 
 load(
@@ -24,8 +26,8 @@ go_register_toolchains(
 ## Load gazelle and dependencies
 http_archive(
     name = "bazel_gazelle",
-    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.15.0/bazel-gazelle-0.15.0.tar.gz",
-    sha256 = "6e875ab4b6bf64a38c352887760f21203ab054676d9c1b274963907e0768740d",
+    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.16.0/bazel-gazelle-0.16.0.tar.gz",
+    sha256 = "7949fc6cc17b5b191103e97481cf8889217263acf52e00b560683413af204fcb",
 )
 
 load(
@@ -47,7 +49,7 @@ git_repository(
 git_repository(
     name = "io_bazel_rules_docker",
     remote = "https://github.com/bazelbuild/rules_docker.git",
-    tag = "v0.5.1",
+    tag = "v0.6.0",
 )
 
 load(
@@ -73,8 +75,10 @@ container_pull(
     tag = "3.7-v20180822-0201cfb11",
 )
 
-## Fetch helm for use in template generation and testing
-new_http_archive(
+## Fetch helm & tiller for use in template generation and testing
+## You can bump the version of Helm & Tiller used during e2e tests by tweaking
+## the version numbers in these rules.
+http_archive(
     name = "helm_darwin",
     sha256 = "7c4e6bfbc211d6b984ffb4fa490ce9ac112cc4b9b8d859ece27045b8514c1ed1",
     urls = ["https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-darwin-amd64.tar.gz"],
@@ -90,7 +94,7 @@ filegroup(
 """,
 )
 
-new_http_archive(
+http_archive(
     name = "helm_linux",
     sha256 = "0fa2ed4983b1e4a3f90f776d08b88b0c73fd83f305b5b634175cb15e61342ffe",
     urls = ["https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz"],
@@ -106,11 +110,57 @@ filegroup(
 """,
 )
 
+container_pull(
+    name = "io_gcr_helm_tiller",
+    registry = "gcr.io",
+    repository = "kubernetes-helm/tiller",
+    tag = "v2.10.0",
+)
+
 ## Install 'kind', for creating kubernetes-in-docker clusters
 go_repository(
     name = "io_kubernetes_sigs_kind",
     commit = "e0e26dae2dab662a3d06756ed668f47b2a0515cc",
     importpath = "sigs.k8s.io/kind",
+)
+
+## Fetch pebble for use during e2e tests
+## You can change the version of Pebble used for tests by changing the 'commit'
+## field in this rule
+go_repository(
+    name = "org_letsencrypt_pebble",
+    commit = "cdd3ed3ddfdf9da7ab27fbe1fe032d0865b65376",
+    importpath = "github.com/letsencrypt/pebble",
+    build_external = "vendored",
+    # Expose the generated go_default_library as 'public' visibility
+    patch_cmds = ["sed -i -e 's/private/public/g' 'cmd/pebble/BUILD.bazel'"],
+)
+
+## Fetch nginx-ingress for use during e2e tests
+## You can change the version of nginx-ingress used for tests by changing the
+## 'tag' field in this rule
+container_pull(
+    name = "io_kubernetes_ingress-nginx",
+    registry = "quay.io",
+    repository = "kubernetes-ingress-controller/nginx-ingress-controller",
+    tag = "0.21.0",
+)
+
+container_pull(
+    name = "io_gcr_k8s_defaultbackend",
+    registry = "k8s.gcr.io",
+    repository = "defaultbackend",
+    tag = "1.4",
+)
+
+## Fetch vault for use during e2e tests
+## You can change the version of vault used for tests by changing the 'tag'
+## field in this rule
+container_pull(
+    name = "com_hashicorp_vault",
+    registry = "index.docker.io",
+    repository = "library/vault",
+    tag = "0.9.3",
 )
 
 ## Install buildozer, for mass-editing BUILD files

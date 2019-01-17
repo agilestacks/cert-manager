@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Jetstack cert-manager contributors.
+Copyright 2019 The Jetstack cert-manager contributors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -161,8 +161,8 @@ func (c *Controller) Sync(ctx context.Context, ch *cmapi.Challenge) (err error) 
 			return err
 		}
 
-		// retry after 5s
-		c.queue.AddAfter(key, time.Second*5)
+		// retry after 10s
+		c.queue.AddAfter(key, time.Second*10)
 
 		return nil
 	}
@@ -224,6 +224,16 @@ func (c *Controller) syncChallengeStatus(ctx context.Context, cl acmecl.Interfac
 
 	// TODO: should we validate the State returned by the ACME server here?
 	cmState := cmapi.State(acmeChallenge.Status)
+	// be nice to our users and check if there is an error that we
+	// can tell them about in the reason field
+	// TODO(dmo): problems may be compound and they may be tagged with
+	// a type field that suggests changes we should make (like provisioning
+	// an account). We might be able to handle errors more gracefully using
+	// this info
+	ch.Status.Reason = ""
+	if acmeChallenge.Error != nil {
+		ch.Status.Reason = acmeChallenge.Error.Detail
+	}
 	ch.Status.State = cmState
 
 	return nil

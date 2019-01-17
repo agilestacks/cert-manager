@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Jetstack cert-manager contributors.
+Copyright 2019 The Jetstack cert-manager contributors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -111,13 +111,20 @@ func ClientWithKey(iss cmapi.GenericIssuer, pk *rsa.PrivateKey) (acme.Interface,
 	if acmeSpec == nil {
 		return nil, fmt.Errorf("issuer %q is not an ACME issuer. Ensure the 'acme' stanza is correctly specified on your Issuer resource", iss.GetObjectMeta().Name)
 	}
-
-	return acmemw.NewLogger(&acmecl.Client{
+	acmeStatus := iss.GetStatus().ACME
+	accountURI := ""
+	if acmeStatus != nil && acmeStatus.URI != "" {
+		accountURI = acmeStatus.URI
+	}
+	acmeCl := &acmecl.Client{
 		HTTPClient:   buildHTTPClient(acmeSpec.SkipTLSVerify),
 		Key:          pk,
 		DirectoryURL: acmeSpec.Server,
 		UserAgent:    util.CertManagerUserAgent,
-	}), nil
+	}
+	acmeCl.SetAccountURL(accountURI)
+
+	return acmemw.NewLogger(acmeCl), nil
 }
 
 // ClientForIssuer will return a properly configure ACME client for the given
@@ -150,7 +157,7 @@ func (h *helperImpl) ClientForIssuer(iss cmapi.GenericIssuer) (acme.Interface, e
 // In future, we may change to having two global HTTP clients - one that ignores
 // TLS connection errors, and the other that does not.
 func buildHTTPClient(skipTLSVerify bool) *http.Client {
-	return &http.Client{
+	return acme.NewInstrumentedClient(&http.Client{
 		Transport: &http.Transport{
 			Proxy:                 http.ProxyFromEnvironment,
 			DialContext:           dialTimeout,
@@ -161,7 +168,7 @@ func buildHTTPClient(skipTLSVerify bool) *http.Client {
 			ExpectContinueTimeout: 1 * time.Second,
 		},
 		Timeout: time.Second * 30,
-	}
+	})
 }
 
 var timeout = time.Duration(5 * time.Second)
