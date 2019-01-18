@@ -66,6 +66,7 @@ spec:
           {{- if .defaultACMEDNS01ChallengeProvider }}
           - --default-acme-issuer-dns01-provider-name={{ .defaultACMEDNS01ChallengeProvider }}
           {{- end }}
+          - --require-annotations={{ .requireAnnotations }}
           {{- end }}
           env:
           - name: POD_NAMESPACE

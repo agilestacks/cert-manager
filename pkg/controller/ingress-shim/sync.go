@@ -62,8 +62,8 @@ var ingressGVK = extv1beta1.SchemeGroupVersion.WithKind("Ingress")
 func (c *Controller) Sync(ctx context.Context, ing *extv1beta1.Ingress) error {
 
         // If requireAnnotations is false, we will fall back to annotations if there isn't a global, default issuer specified
-        if (c.defaults.requireAnnotations || c.defaults.issuerName == "") || !shouldSync(ing, c.defaults.autoCertificateAnnotations) {
-		glog.Infof("Not syncing ingress %s/%s as it does not contain necessary annotations", ing.Namespace, ing.Name)
+        if (c.defaults.requireAnnotations || c.defaults.issuerName == "") && !shouldSync(ing, c.defaults.autoCertificateAnnotations) {
+		glog.Infof("Not syncing ingress %s/%s as it does not contain necessary annotations and requireAnnotations is %t and issuerName is %s", ing.Namespace, ing.Name, c.defaults.requireAnnotations, c.defaults.issuerName)
 		return nil
 	}
 
